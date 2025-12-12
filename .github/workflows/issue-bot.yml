@@ -1,0 +1,51 @@
+name: Issue Auto Teacher Bot
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  teach:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate AI Help
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+
+            const reply = `
+### 🧠 AI Issue Teacher Bot Here!
+
+🔍 **Issue Summary:**  
+${issue.title}
+
+💡 **Possible Cause:**  
+- Something in this part of the code may be misconfigured  
+- Missing variable / API / connection  
+- Incorrect import / function parameter
+
+🛠️ **How to Fix (Step-by-step):**  
+1. Check logs for exact error  
+2. Verify your API routes  
+3. Validate input fields  
+4. Re-run build  
+5. Test again
+
+📦 **Suggested Code Fix:**  
+\`\`\`js
+// Example structure
+function fixIssue() {
+  console.log("Fixing your issue...");
+}
+\`\`\`
+
+If you need deeper help, comment more details!  
+`;
+
+            github.rest.issues.createComment({
+              issue_number: issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: reply
+            });
